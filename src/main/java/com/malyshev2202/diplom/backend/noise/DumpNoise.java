@@ -3,6 +3,7 @@ package com.malyshev2202.diplom.backend.noise;
 import com.malyshev2202.diplom.backend.model.MyImage;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 // этот класс предоставляет методы которые будут зашумлять изображение добавлением к интенсивности пикселей различные коэфициенты
 public class DumpNoise implements Noise{
@@ -13,14 +14,14 @@ public class DumpNoise implements Noise{
 
     public DumpNoise(MyImage image){
         this.myImage= image;
-        rCanalNoisyMatrix=new int[image.getWidth()][image.getHeight()];
-        gCanalNoisyMatrix=new int[image.getWidth()][image.getHeight()];
-        bCanalNoisyMatrix=new int[image.getWidth()][image.getHeight()];
+        rCanalNoisyMatrix=new int[myImage.getImage().getWidth()][myImage.getImage().getHeight()];
+        gCanalNoisyMatrix=new int[myImage.getImage().getWidth()][myImage.getImage().getHeight()];
+        bCanalNoisyMatrix=new int[myImage.getImage().getWidth()][myImage.getImage().getHeight()];
     }
     // этот метод добавляет пользовательские коэфициенты к интенсивности пикселей (!!! возможна потеря данных)
     public void dumpNoiseGenerator(int rCoef,int gCoef, int bCoef){
-        for (int x = 0; x < myImage.getWidth(); x++) {
-            for (int y = 0; y < myImage.getHeight(); y++) {
+        for (int x = 0; x < myImage.getImage().getWidth(); x++) {
+            for (int y = 0; y < myImage.getImage().getHeight(); y++) {
                 //зашумляем красный канал
                 if((myImage.getrCanalMatrix()[x][y]+rCoef)>254)
                     rCanalNoisyMatrix[x][y]=254;
@@ -46,22 +47,23 @@ public class DumpNoise implements Noise{
         }
     }
     //метод создаёт зашумлённую картинку(делать только после метода dumpNoiseGenerator)
-    public MyImage createNoisyImage(){
-        MyImage result=new MyImage(MyImage.getImage());
-        for (int x = 0; x < myImage.getWidth(); x++) {
-            for (int y = 0; y < myImage.getHeight(); y++) {
+    public BufferedImage createNoisyImage(){
+        BufferedImage result=myImage.getImage();
+        for (int x = 0; x < myImage.getImage().getWidth(); x++) {
+            for (int y = 0; y < myImage.getImage().getHeight(); y++) {
                 Color color=new Color(rCanalNoisyMatrix[x][y],gCanalNoisyMatrix[x][y],bCanalNoisyMatrix[x][y]);
                 result.setRGB(x,y,color.getRGB());
             }
         }
+        myImage.setImage(result);
         return result;
 
     }
     //метод востанавливает нормальную  картинкуиз зашумлённой(делать только после метода dumpNoiseGenerator)
-    public MyImage dumpNoiseRecovery(int rCoef, int gCoef, int bCoef){
-        MyImage result=new MyImage(MyImage.getImage());
-        for (int x = 0; x < myImage.getWidth(); x++) {
-            for (int y = 0; y < myImage.getHeight(); y++) {
+    public BufferedImage dumpNoiseRecovery(int rCoef, int gCoef, int bCoef){
+        BufferedImage result=myImage.getImage();
+        for (int x = 0; x < myImage.getImage().getWidth(); x++) {
+            for (int y = 0; y < myImage.getImage().getHeight(); y++) {
                 if(rCoef<0)
                     rCanalNoisyMatrix[x][y]-=rCoef;
                 else if(rCoef>0)
@@ -78,6 +80,7 @@ public class DumpNoise implements Noise{
                 result.setRGB(x,y,color.getRGB());
             }
         }
+        myImage.setImage(result);
         return result;
     }
 }
