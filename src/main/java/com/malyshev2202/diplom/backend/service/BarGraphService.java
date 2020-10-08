@@ -3,6 +3,8 @@ package com.malyshev2202.diplom.backend.service;
 
 import com.malyshev2202.diplom.backend.model.MyImage;
 
+import java.util.Arrays;
+
 //этот класс служит серисом, который будет рассчитывать кличество пикселей соответсвующих интенсивности от 0 до 255
 // для того чтобы посторить на основе этих данных гистограммы
 public class BarGraphService {
@@ -63,6 +65,25 @@ public class BarGraphService {
                 }
             }
         }
+    }
+    // метод поиска медианного значения в матрице интенссивности
+    public int getMedian(int[] arr){
+        int[] sortedArr=arr.clone();
+        Arrays.sort(sortedArr);
+        double median;
+        int medianIntencity=0;
+        if (sortedArr.length % 2 == 0)
+            median = ((double)sortedArr[sortedArr.length/2] + (double)sortedArr[sortedArr.length/2 - 1])/2;
+        else
+            median = (double) sortedArr[sortedArr.length/2];
+        double dif=Math.abs(arr[0]-median);
+        for (int i=0; i<arr.length;i++){
+            if((Math.abs(arr[i]-median))<dif){
+                dif=Math.abs(arr[i]-median);
+                medianIntencity=i;}
+
+        }
+        return medianIntencity;
     }
 
 

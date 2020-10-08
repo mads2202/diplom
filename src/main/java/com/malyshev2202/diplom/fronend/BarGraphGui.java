@@ -50,9 +50,6 @@ public class BarGraphGui extends ApplicationFrame {
                 renderer.setSeriesPaint(2, Color.BLUE);
                 break;
         }
-        renderer.setSeriesPaint(0, Color.RED);
-        renderer.setSeriesPaint(1, Color.GREEN);
-        renderer.setSeriesPaint(2, Color.BLUE);
         renderer.setSeriesStroke(0, new BasicStroke(2.0f));
         renderer.setSeriesStroke(1, new BasicStroke(2.0f));
         renderer.setSeriesStroke(2, new BasicStroke(2.0f));
