@@ -72,7 +72,6 @@ public class DumpNoise implements Noise {
         for (int i = 0; i < myImage.getImage().getWidth() * myImage.getImage().getHeight(); i++) {
             coefs[i] = getRand();
         }
-        System.out.println(coefs[1]);
         int i = 0;
         for (int x = 0; x < myImage.getImage().getWidth(); x++) {
             for (int y = 0; y < myImage.getImage().getHeight(); y++) {
