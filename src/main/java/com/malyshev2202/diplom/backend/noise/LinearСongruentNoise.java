@@ -25,7 +25,7 @@ public class LinearСongruentNoise implements Noise {
     // метод реализующий линейно-конгруэнтный генератор случайных чисел
     public int getRand() {
         seed = (a * seed + c) % m;
-        return (int) (seed % 50);
+        return (int) (seed % 100);
     }
     //метод который зашумляет изображение добавляя коэфициенты сгенерированные линейно-конгруэнтным генератором к интесивности пикселей
     public void linearСongruentNoiseGenerator() {

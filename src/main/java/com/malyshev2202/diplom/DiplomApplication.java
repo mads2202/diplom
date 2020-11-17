@@ -10,6 +10,7 @@ import com.malyshev2202.diplom.backend.service.ImageCreater;
 import com.malyshev2202.diplom.backend.service.MyImageService;
 import com.malyshev2202.diplom.fronend.BarGraphGui;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 
 public class DiplomApplication {
@@ -67,10 +68,35 @@ public class DiplomApplication {
          *
     */
         PhaseNoise phaseNoise = new PhaseNoise(image);
-        phaseNoise.phaseNoiseGeneratorPhase2(phaseNoise.phaseNoiseGeneratorPhase1(image.getrCanalMatrix()));
-        BarGraphGui barGraphGui = new BarGraphGui(barGraphService, 3);
+        LinearСongruentNoise linearСongruentNoise = new LinearСongruentNoise(image);
+        //создаём зашумлённые матрицы
+        linearСongruentNoise.linearСongruentNoiseGenerator();
+        BufferedImage bufferedImage=ImageCreater.createNoisyImage(image,linearСongruentNoise.getrCanalNoisyMatrix(),
+                linearСongruentNoise.getgCanalNoisyMatrix(),linearСongruentNoise.getbCanalNoisyMatrix());
+        MyImage noisyImage= new MyImage(bufferedImage);
+        int[][] r=phaseNoise.phaseNoiseGeneratorPhase(noisyImage.getrCanalMatrix(),512.0,226.0,29.0);
+        for (int i=0;i<10;i++){
+            r=phaseNoise.phaseNoiseGeneratorPhase(r,512.0,226.0,29.0);
+        }
+        phaseNoise.setrCanalNoisyMatrix(r);
+        int[][] g=phaseNoise.phaseNoiseGeneratorPhase(noisyImage.getgCanalMatrix(),512.0,226.0,29.0);
+        for (int i=0;i<20;i++){
+            g=phaseNoise.phaseNoiseGeneratorPhase(g,512.0,226.0,29.0);
+        }
+        phaseNoise.setgCanalNoisyMatrix(g);
+        int[][] b=phaseNoise.phaseNoiseGeneratorPhase(noisyImage.getbCanalMatrix(),512.0,226.0,29.0);
+        for (int i=0;i<30;i++){
+            b=phaseNoise.phaseNoiseGeneratorPhase(b,512.0,226.0,29.0);
+        }
+        phaseNoise.setbCanalNoisyMatrix(b);
+
+        myImageService.saveImage(ImageCreater.createNoisyImage(noisyImage,phaseNoise.getrCanalNoisyMatrix(),
+                phaseNoise.getgCanalNoisyMatrix(),phaseNoise.getbCanalNoisyMatrix()),
+                "D:\\Учёба\\diplom");
+       BarGraphGui barGraphGui = new BarGraphGui(barGraphService, 3);
         barGraphGui.setVisible(true);
 
 
     }
 }
+

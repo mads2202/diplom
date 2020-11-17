@@ -4,6 +4,7 @@ package com.malyshev2202.diplom.backend.noise;
 // 3) другую фазу построить примени новые коэфициенты 2 раза для 2 троек
 // 4) востановить картинку.  Возьми полученную картинку и примени к ней методы из phaseNoise  с теми коэфициентами которые скинули потом.
 // 5) зашумить согнуть фазу разогнуть фазу расшумить.
+
 import com.malyshev2202.diplom.backend.model.MyImage;
 
 import java.util.ArrayList;
@@ -14,12 +15,6 @@ public class PhaseNoise implements Noise {
     private int[][] rCanalNoisyMatrix;
     private int[][] gCanalNoisyMatrix;
     private int[][] bCanalNoisyMatrix;
-    private static final double a01 = 128/128;
-    private static final double a11 = -128/128;
-    private static final double a21 = 38/128;
-    private static final double a02 = 128/128;
-    private static final double a12 = 79/128;
-    private static final double a22 = -32/128;
 
 
     public PhaseNoise(MyImage image) {
@@ -29,6 +24,63 @@ public class PhaseNoise implements Noise {
         bCanalNoisyMatrix = new int[myImage.getImage().getWidth()][myImage.getImage().getHeight()];
 
     }
+
+    public int[][] phaseNoiseGeneratorPhase(int[][] arr, double a0, double a1, double a2) {
+
+        a1=a1/a0;
+        a2=a2/a0;
+        int[] x = arr2DTo1DArrInt(arr);
+        System.out.println(x.length);
+        double[] y = new double[x.length];
+        y[0] = a2 * x[0];
+        y[1] = a2 * x[1] + +a1 * x[0] + -a1 * y[0];
+        y[2] = a2 * x[2] + a1 * x[1] + x[0] - a1 * y[1] - a2 * y[0];
+        for (int i = 3; i < x.length; i++) {
+            y[i] = a2 * x[i] + a1 * x[i - 1] + x[i - 2] - a1 * y[i - 1] - a2 * y[i - 2];
+                if(y[i]>255)
+                    y[i]=255;
+
+        }
+     /*   for (int i = 0; i < y.length; i++) {
+            if(y[i]>255 ||y[i]<-255)
+               System.out.println(i +" " +y[i]);
+        }*/
+
+        return arr1DTo2DArr(absIntArr(doubleArrToIntArr(y)));
+
+    }
+
+    public int[] doubleArrToIntArr(double[] arr){
+        int[] newArr= new int[arr.length];
+        for (int i=0;i<arr.length;i++){
+            newArr[i]=(int)arr[i];
+        }
+        return newArr;
+    }
+
+    public int[] absIntArr(int[] arr){
+        int[] newArr= new int[arr.length];
+        for (int i=0;i<arr.length;i++){
+            newArr[i]=Math.abs(arr[i]);
+        }
+        return newArr;
+    }
+
+
+    private int[][] arr1DTo2DArr(int[] arr) {
+        int[][] newArr = new int[myImage.getImage().getWidth()][myImage.getImage().getHeight()];
+        int i = 0;
+
+        for (int x = 0; x < myImage.getImage().getWidth(); x++) {
+            for (int y = 0; y < myImage.getImage().getHeight(); y++) {
+                newArr[x][y] = arr[i];
+                i++;
+
+            }
+        }
+        return newArr;
+    }
+
 
     private double[] arr2DTo1DArr(double[][] arr) {
         ArrayList<Double> list = new ArrayList<Double>();
@@ -58,44 +110,35 @@ public class PhaseNoise implements Noise {
         return newArr;
     }
 
-    public double[][] phaseNoiseGeneratorPhase1(int[][] arr) {
-        int[] x = arr2DTo1DArrInt(arr);
-        double[] y = new double[x.length];
-        y[0] = a21 * x[0];
-        y[1] = a21 * x[1] + +a11 * x[0] + -a11 * y[0];
-        y[2] = a21 * x[2] + a11 * x[1] + x[0] - a11 * y[1] - a21 * y[0];
-        for (int i = 3; i < x.length; i++) {
-            y[i] = a21 * x[i] + a11 * x[i - 1] + x[i - 2] - a11 * y[i - 1] - a21 * y[i - 2];
-        }
-
-return  arr1DTo2DArr(y);
+    public MyImage getMyImage() {
+        return myImage;
     }
 
-    public void phaseNoiseGeneratorPhase2(double[][] arr) {
-        double[] x = arr2DTo1DArr(arr);
-        double[] y = new double[x.length];
-        y[0] = a22 * x[0];
-        y[1] = a22 * x[1] + a12 * x[0] - a12 * y[0];
-        y[2] = a22 * x[2] + a12 * x[1] + x[0] - a12 * y[1] + a22 * y[0];
-        for (int i = 3; i < x.length; i++) {
-            y[i] = a22 * x[i] + a12 * x[i - 1] + x[i - 2] - a12 * y[i - 1] + a22 * y[i - 2];
-        }
-        System.out.println(Arrays.toString(y));
-
+    public void setMyImage(MyImage myImage) {
+        this.myImage = myImage;
     }
 
-    private double[][] arr1DTo2DArr(double[] arr) {
-        double[][] newArr = new double[myImage.getImage().getWidth()][myImage.getImage().getHeight()];
-        int i = 0;
-
-        for (int x = 0; x < myImage.getImage().getWidth(); x++) {
-            for (int y = 0; y < myImage.getImage().getHeight(); y++) {
-                newArr[x][y] = arr[i];
-                i++;
-
-            }
-        }
-        return newArr;
+    public int[][] getrCanalNoisyMatrix() {
+        return rCanalNoisyMatrix;
     }
 
+    public void setrCanalNoisyMatrix(int[][] rCanalNoisyMatrix) {
+        this.rCanalNoisyMatrix = rCanalNoisyMatrix;
+    }
+
+    public int[][] getgCanalNoisyMatrix() {
+        return gCanalNoisyMatrix;
+    }
+
+    public void setgCanalNoisyMatrix(int[][] gCanalNoisyMatrix) {
+        this.gCanalNoisyMatrix = gCanalNoisyMatrix;
+    }
+
+    public int[][] getbCanalNoisyMatrix() {
+        return bCanalNoisyMatrix;
+    }
+
+    public void setbCanalNoisyMatrix(int[][] bCanalNoisyMatrix) {
+        this.bCanalNoisyMatrix = bCanalNoisyMatrix;
+    }
 }
